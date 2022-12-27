@@ -9,7 +9,8 @@ package game;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
-//import Textures.TextureReader;
+
+
 import com.sun.opengl.util.Animator;
 import com.sun.opengl.util.FPSAnimator;
 import com.sun.opengl.util.GLUT;
@@ -27,7 +28,8 @@ import javax.media.opengl.glu.GLU;
 
 public class twoplayerMode extends JFrame implements MouseMotionListener, MouseListener {//, KeyListener {
 
-    air2P listener = new air2P();
+
+    air_1 listener = new air_1();
     GLCanvas glcanvas;
     static Animator anim;
 
@@ -88,14 +90,15 @@ public class twoplayerMode extends JFrame implements MouseMotionListener, MouseL
 
 }
 
-class air2P implements GLEventListener , KeyListener{
+
+class air_1 implements GLEventListener , KeyListener{
     GLUT g=new GLUT();
     int xp1 = 0;     // x1 for player1
     int yp1 =-225;  // y1 for player1
 
 
     int xp2=0;      //x1 for computer player
-    int yp =220;   // y1 for computer player
+    int yp2=220;   // y1 for computer player
     double cx,cy;  // vertices for draw cycle
     final double ONE_DEGREE = (Math.PI / 180);
     final double THREE_SIXTY = 2 * Math.PI;
@@ -108,14 +111,16 @@ class air2P implements GLEventListener , KeyListener{
     float x= a;       //holds the new 'x' position of ball
     float y = b;     //holds the new 'y' position
     boolean movingRight= true;  // check ball x1 increase or decrease
-    boolean movingUp= true;    // check ball will crash up or down
-    boolean verticle =false;  // check slope not define is vertical if (x1-x0 =0)
-    boolean up=false;        // if slope not define do it if y1>y0
-    boolean down=false;     // if slope not define do it if y1<y0
-    boolean play=false;    //  begin play if one player touch ball & to be false if game finished
-    boolean computer_player=false; //who is 2player computer or player
+    boolean movingUp= true;
+    boolean verticle =false;
+    boolean up=false;
+    boolean down=false;
+    boolean play=false;
+
     int scoreplayer1=0;
     int scoreplayer2=0;
+    
+    String massege;
     
         // pictures
     String textureNames[] = {"Ball.png","Rpaddle.png","Bpaddle.png", "Stadium.png"};////////////////////////
@@ -172,7 +177,9 @@ class air2P implements GLEventListener , KeyListener{
         
         drawplayer(gl,1,0,0,0,0,1,xp1,yp1,1);//player1
         ///////////////////////////
-        drawplayer(gl,0,0,1,1,0,0,xp2,yp,2 ); //player2
+
+        drawplayer(gl,0,0,1,1,0,0,xp2,yp2,2); //player2
+
         ////////////////////////////
         handleKeyPress();
 
@@ -186,6 +193,7 @@ class air2P implements GLEventListener , KeyListener{
         g.glutBitmapString(5,Integer.toString(scoreplayer1));
 
 //
+
     }
 
      public void DrawBackground(GL gl){
@@ -282,9 +290,9 @@ class air2P implements GLEventListener , KeyListener{
         // player2
 
 
-        if((int)Math.sqrt(Math.pow(x-xp2,2)+Math.pow(y-yp ,2))<=30){
+        if((int)Math.sqrt(Math.pow(x-xp2,2)+Math.pow(y-yp2,2))<=30){
             a=xp2;
-            b=yp ;
+            b=yp2;
             play=true;
             verticle=(x-xp2==0);
             if(verticle){
@@ -294,32 +302,32 @@ class air2P implements GLEventListener , KeyListener{
                     up=true;
                 }
             }else{down=up=false;}
-            slope=(y-yp )/(x-xp2);
-            if(yp >y&&slope<0){
+            slope=(y-yp2)/(x-xp2);
+            if(yp2>y&&slope<0){
                 movingUp=false;
                 movingRight=true;
                 x+=10;
             }
-            if(yp >y&&slope>0){
+            if(yp2>y&&slope>0){
                 movingUp=false;
                 movingRight=false;
                 x-=10;
             }
 
-            if(yp <y&&slope<0){
+            if(yp2<y&&slope<0){
                 movingUp=true;
                 movingRight=false;
                 x-=10;
             }
 
-            if(yp <y&&slope>0){
+            if(yp2<y&&slope>0){
                 movingUp=true;
                 movingRight=true;
                 x+=10;
             }
         }
 
-
+        //the bounce from
         if(play){
             if(!verticle){
                 y = (slope * (x - a) + b);
@@ -422,23 +430,11 @@ class air2P implements GLEventListener , KeyListener{
 //        gl.glDisable(GL.GL_BLEND);
         
         gl.glEnd();
-        // draw small circle for player
-//               gl.glColor3f(red2, green2, blue2);
-//               gl.glBegin(GL.GL_POLYGON);
-//               for (double aa = 0; aa < THREE_SIXTY; aa += ONE_DEGREE){
-//                     cx = radius2 * (Math.cos(aa))+x;
-//                     cy = radius2 * (Math.sin(aa))+y;
-//                     gl.glVertex2d(cx, cy);
-//               }
-//               gl.glEnd();
+
     }
 
-    //    public void draw_ground(GL gl,float red,float green,float blue){
-//
-//
-//
-//    }
-//
+
+    //
     public void winner(GL gl){
         if((x>-100&&x<100)&&y<=-235&&play){
 
@@ -451,14 +447,37 @@ class air2P implements GLEventListener , KeyListener{
             scoreplayer1++;
         }
         drawball(gl);
-        
+
+
+        if(scoreplayer1>=1){
+            play = true;
+            massege = "player 1 win";
+
+
+
+        }
+        if (scoreplayer2>=1){
+            //play = false;
+            massege = "player 2 win";
+            displayMassg(gl , massege);
+        }
+    }
+    ////to show massege for the winner
+    void displayMassg(GL gl, String massege){
+
+        gl.glPushMatrix();
+        renderer.beginRendering(10, 10);
+        renderer.draw(massege, 20,20);
+        renderer.endRendering();
+        gl.glPopMatrix();
+
     }
 
     public void Again(){
         xp1 = 0;
         yp1 =-225;
         xp2=0;
-        yp =220;
+        yp2=220;
 
         a = 0;
         b = 0;
@@ -488,13 +507,13 @@ class air2P implements GLEventListener , KeyListener{
             }
         }
         if (isKeyPressed(KeyEvent.VK_S)) {
-            if (yp > 20) {
-                yp +=-3;
+            if (yp2> 20) {
+                yp2+=-3;
             }
         }
         if (isKeyPressed(KeyEvent.VK_W)) {
-            if (yp < 220) {
-                yp +=3;
+            if (yp2< 220) {
+                yp2+=3;
             }
         }
 
@@ -523,7 +542,12 @@ class air2P implements GLEventListener , KeyListener{
             
         }
         
-
+        if (isKeyPressed(KeyEvent.VK_ESCAPE)){
+            System.exit(0);
+        }
+        if (isKeyPressed(KeyEvent.VK_SPACE)){
+            play = true;
+        }
 
     }
 
@@ -547,7 +571,7 @@ class air2P implements GLEventListener , KeyListener{
 
     public boolean isKeyPressed(final int keyCode) {
         return keyBits.get(keyCode);
-}
+    }
 
         public void draw_ground(GL gl,float red,float green,float blue){
             gl.glLineWidth(5f);
