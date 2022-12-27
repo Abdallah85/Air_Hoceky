@@ -6,30 +6,28 @@ package game;
  * and open the template in the editor.
  */
 
-
-
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
 //import Textures.TextureReader;
 import com.sun.opengl.util.Animator;
 import com.sun.opengl.util.FPSAnimator;
 import com.sun.opengl.util.GLUT;
 import java.awt.BorderLayout;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import javax.media.opengl.GL;
-import javax.media.opengl.GLAutoDrawable;
-import javax.media.opengl.GLCanvas;
-import javax.media.opengl.GLDrawable;
-import javax.media.opengl.GLEventListener;
+import javax.media.opengl.*;
 import javax.swing.JFrame;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.BitSet;
-import  com.sun.opengl.util.j2d.TextRenderer;
-
+import com.sun.opengl.util.j2d.TextRenderer;
+import Textures.AnimListener;
+import Textures.TextureReader;                        ////////////////////////////
+import java.io.IOException;
+import javax.media.opengl.glu.GLU;
 
 public class twoplayerMode extends JFrame implements MouseMotionListener, MouseListener {//, KeyListener {
 
-    air_ listener = new air_();
+    air2P listener = new air2P();
     GLCanvas glcanvas;
     static Animator anim;
 
@@ -53,9 +51,7 @@ public class twoplayerMode extends JFrame implements MouseMotionListener, MouseL
         setSize(800, 900);
         setLocationRelativeTo(null);
         setVisible(true);
-
-
-
+        setResizable(false);
     }
 
 
@@ -92,8 +88,7 @@ public class twoplayerMode extends JFrame implements MouseMotionListener, MouseL
 
 }
 
-class air_
-        implements GLEventListener , KeyListener{
+class air2P implements GLEventListener , KeyListener{
     GLUT g=new GLUT();
     int xp1 = 0;     // x1 for player1
     int yp1 =-225;  // y1 for player1
@@ -121,10 +116,15 @@ class air_
     boolean computer_player=false; //who is 2player computer or player
     int scoreplayer1=0;
     int scoreplayer2=0;
-    String textureNames[] = {"Man1.png","bullet.png", "Back.png"};
-   // TextureReader.Texture texture[] = new TextureReader.Texture[textureNames.length];
+    
+        // pictures
+    String textureNames[] = {"Ball.png","Rpaddle.png","Bpaddle.png", "Stadium.png"};////////////////////////
+    TextureReader.Texture texture[] = new TextureReader.Texture[textureNames.length];
     int textures[] = new int[textureNames.length];
-    TextRenderer renderer;
+    //
+    
+//    TextRenderer renderer;
+      TextRenderer renderer = new TextRenderer(new Font("SansSerif", Font.BOLD, 10));
     public void init(GLAutoDrawable gld) {
         GL gl = gld.getGL();
         // GLU glu = new GLU();
@@ -132,20 +132,51 @@ class air_
         gl.glMatrixMode(GL.GL_PROJECTION);
         gl.glLoadIdentity();
         gl.glOrtho(-250.0, 250.0, -250.0, 250.0,1.0,-1.0);
-        renderer = new TextRenderer(new Font("SansSerif", Font.BOLD, 40));
+//        renderer = new TextRenderer(new Font("SansSerif", Font.BOLD, 40));
+        
+        //pictures
+        gl.glEnable(GL.GL_TEXTURE_2D);  // Enable Texture Mapping
+        gl.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_ALPHA);	
+        gl.glGenTextures(textureNames.length, textures, 0);
+        
+        for(int i = 0; i < textureNames.length; i++){
+            try {
+                texture[i] = TextureReader.readTexture(textureNames[i] , true);
+                gl.glBindTexture(GL.GL_TEXTURE_2D, textures[i]);
+
+//                mipmapsFromPNG(gl, new GLU(), texture[i]);
+                new GLU().gluBuild2DMipmaps(
+                    GL.GL_TEXTURE_2D,
+                    GL.GL_RGBA, // Internal Texel Format,
+                    texture[i].getWidth(), texture[i].getHeight(),
+                    GL.GL_RGBA, // External format from image,
+                    GL.GL_UNSIGNED_BYTE,
+                    texture[i].getPixels() // Imagedata
+                    );
+            } catch( IOException e ) {
+              System.out.println(e);
+              e.printStackTrace();
+            }
+        }
     }
 
 
     public void display(GLAutoDrawable drawable) {
         GL gl = drawable.getGL();
         gl.glClear(GL.GL_COLOR_BUFFER_BIT);
-        drawplayer(gl,1,0,0,0,0,1,xp1,yp1);//player1
+//        gl.glLoadIdentity();
+
+        DrawBackground(gl);
+        draw_ground(gl,1,1,1);
+
+        
+        drawplayer(gl,1,0,0,0,0,1,xp1,yp1,1);//player1
         ///////////////////////////
-        drawplayer(gl,0,0,1,1,0,0,xp2,yp ); //player2
+        drawplayer(gl,0,0,1,1,0,0,xp2,yp,2 ); //player2
         ////////////////////////////
         handleKeyPress();
 
-
+        gl.glColor3f(255, 255, 0);
 ///////////////////////////
         winner(gl);
         // show the score on the screen
@@ -157,6 +188,37 @@ class air_
 //
     }
 
+     public void DrawBackground(GL gl){
+        gl.glEnable(GL.GL_BLEND);	
+        gl.glBindTexture(GL.GL_TEXTURE_2D, textures[3]);
+        // Turn Blending On
+
+        gl.glPushMatrix();
+            gl.glBegin(GL.GL_QUADS);
+            // Front Face
+                gl.glTexCoord2f(0.0f, 0.0f);
+                gl.glVertex3f(-1.0f, -1.0f, -1.0f);
+                gl.glTexCoord2f(1.0f, 0.0f);
+                gl.glVertex3f(1.0f, -1.0f, -1.0f);
+                gl.glTexCoord2f(1.0f, 1.0f);
+                gl.glVertex3f(1.0f, 1.0f, -1.0f);
+                gl.glTexCoord2f(0.0f, 1.0f);
+                gl.glVertex3f(-1.0f, 1.0f, -1.0f);
+            gl.glEnd();
+        gl.glPopMatrix();
+        
+        gl.glDisable(GL.GL_BLEND);
+        
+        gl.glColor3f(126, 200, 80);
+        gl.glBegin(GL.GL_QUADS);
+        gl.glVertex2f(-1.0f, -1.0f);
+        gl.glVertex2f(1.0f, -1.0f);
+        gl.glVertex2f(1.0f, 1.0f);
+        gl.glVertex2f(-1.0f, 1.0f);
+        gl.glEnd();
+    }
+    
+    
     public void reshape(
             GLDrawable drawable,
             int x,
@@ -172,11 +234,9 @@ class air_
             boolean deviceChanged
     ) {
     }
-
     @Override
     public void reshape(GLAutoDrawable glad, int i, int i1, int i2, int i3) {
     }
-
     @Override
     public void displayChanged(GLAutoDrawable glad, boolean bln, boolean bln1) {
     }
@@ -317,7 +377,7 @@ class air_
                 up=false;
             }
         }
-        gl.glColor3f(.3f,0.5f,.3f);
+        gl.glColor3f(255,255,0);
         gl.glBegin(GL.GL_POLYGON);
         for (double i = 0; i < THREE_SIXTY; i += ONE_DEGREE){
             cx = radius2 * (Math.cos(i))+x;
@@ -328,7 +388,7 @@ class air_
 
     }
 
-    public void drawplayer(GL gl,float red1,float green1,float blue1,float red2,float green2,float blue2,double x,double y){
+    public void drawplayer(GL gl,float red1,float green1,float blue1,float red2,float green2,float blue2,double x,double y , int index){
         // draw big circle for player
         gl.glPolygonMode(GL.GL_FRONT_AND_BACK,GL.GL_FILL);
         gl.glColor3f(red1, green1, blue1);
@@ -338,6 +398,29 @@ class air_
             cy = radius1 * (Math.sin(aa))+y;
             gl.glVertex2d(cx, cy);
         }
+        
+//                gl.glEnable(GL.GL_BLEND);
+//        
+//        gl.glBindTexture(GL.GL_TEXTURE_2D, textures[index]);
+//
+//        gl.glPushMatrix();
+//            gl.glTranslated( (x-radius1) /(x+radius1) , (y-radius1)/(y+radius1) , 0);
+//            gl.glScaled(0.1, 0.1, 1);
+//            gl.glBegin(GL.GL_QUADS);
+//            // Front Face
+//                gl.glTexCoord2f(0.0f, 0.0f);
+//                gl.glVertex3f(-1.0f, -1.0f, -1.0f);
+//                gl.glTexCoord2f(1.0f, 0.0f);
+//                gl.glVertex3f(1.0f, -1.0f, -1.0f);
+//                gl.glTexCoord2f(1.0f, 1.0f);
+//                gl.glVertex3f(1.0f, 1.0f, -1.0f);
+//                gl.glTexCoord2f(0.0f, 1.0f);
+//                gl.glVertex3f(-1.0f, 1.0f, -1.0f);
+//            gl.glEnd();
+//        gl.glPopMatrix();
+//        
+//        gl.glDisable(GL.GL_BLEND);
+        
         gl.glEnd();
         // draw small circle for player
 //               gl.glColor3f(red2, green2, blue2);
@@ -357,18 +440,18 @@ class air_
 //    }
 //
     public void winner(GL gl){
-        if((x>-35&&x<35)&&y<=-235&&play){
+        if((x>-100&&x<100)&&y<=-235&&play){
 
             Again();
             scoreplayer2++;
         }
-        if((x>-35&&x<35)&&y>=235&&play){
+        if((x>-100&&x<100)&&y>=235&&play){
 
             Again();
             scoreplayer1++;
         }
         drawball(gl);
-
+        
     }
 
     public void Again(){
@@ -436,6 +519,10 @@ class air_
                 yp1+=3;
             }
         }
+        if (isKeyPressed(KeyEvent.VK_O)) {
+            
+        }
+        
 
 
     }
@@ -462,4 +549,59 @@ class air_
         return keyBits.get(keyCode);
 }
 
+        public void draw_ground(GL gl,float red,float green,float blue){
+            gl.glLineWidth(5f);
+            //draw ground
+            gl.glColor3f(red, green, blue);
+            gl.glBegin(GL.GL_LINES);
+            gl.glVertex2f(245,-245);
+            gl.glVertex2f(245,245);
+            
+            gl.glVertex2f(-245,-245);
+            gl.glVertex2f(-245,245);
+            
+            gl.glVertex2f(245,245);
+            gl.glVertex2f(100,245);
+            
+            gl.glVertex2f(-100,245);
+            gl.glVertex2f(-245,245);
+            
+            gl.glVertex2f(-100,-245);
+            gl.glVertex2f(-245,-245);
+            
+            gl.glVertex2f(100,-245);
+            gl.glVertex2f(245,-245); 
+            
+            gl.glVertex2f(-245,0);
+            gl.glVertex2f(245,0);
+            
+             gl.glVertex2f(100,245);
+            gl.glVertex2f(100,200); 
+            
+             gl.glVertex2f(-100,245);
+            gl.glVertex2f(-100,200);
+            
+             gl.glVertex2f(-100,200);
+            gl.glVertex2f(100,200);
+            
+              gl.glVertex2f(-100,-245);
+            gl.glVertex2f(-100,-200);
+            
+             gl.glVertex2f(-100,-200);
+            gl.glVertex2f(100,-200);
+            
+            gl.glVertex2f(100,-245);
+            gl.glVertex2f(100,-200);
+            
+            gl.glEnd();
+            
+            gl.glPolygonMode(GL.GL_FRONT_AND_BACK,GL.GL_LINE);
+             gl.glBegin(GL.GL_POLYGON);
+            for (double aa = 0; aa < THREE_SIXTY; aa += ONE_DEGREE){
+                  cx = radius3 * (Math.cos(aa));
+                  cy = radius3 * (Math.sin(aa));
+                  gl.glVertex2d(cx, cy);
+            }
+            gl.glEnd();
+    }
 }

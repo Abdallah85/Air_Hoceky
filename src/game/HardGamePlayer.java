@@ -5,22 +5,24 @@
  */
 package game;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
+//import Textures.TextureReader;
 import com.sun.opengl.util.Animator;
 import com.sun.opengl.util.FPSAnimator;
 import com.sun.opengl.util.GLUT;
 import java.awt.BorderLayout;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import javax.media.opengl.GL;
-import javax.media.opengl.GLAutoDrawable;
-import javax.media.opengl.GLCanvas;
-import javax.media.opengl.GLDrawable;
-import javax.media.opengl.GLEventListener;
+import javax.media.opengl.*;
 import javax.swing.JFrame;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.BitSet;
-import  com.sun.opengl.util.j2d.TextRenderer;
+import com.sun.opengl.util.j2d.TextRenderer;
+import Textures.AnimListener;
+import Textures.TextureReader;                        ////////////////////////////
+import java.io.IOException;
+import javax.media.opengl.glu.GLU;
 
 
 public class HardGamePlayer extends JFrame implements MouseMotionListener, MouseListener {
@@ -117,6 +119,15 @@ public class HardGamePlayer extends JFrame implements MouseMotionListener, Mouse
      //  begin play if one player touch ball & to be false if game finished
     int scoreplayer1=0;
     int scoreplayer2=0;
+    
+    
+            String textureNames[] = {"Ball.png","Rpaddle.png","Bpaddle.png", "Stadium.png"};////////////////////////
+    TextureReader.Texture texture[] = new TextureReader.Texture[textureNames.length];
+    int textures[] = new int[textureNames.length];
+    //
+    
+//    TextRenderer renderer;
+      TextRenderer renderer = new TextRenderer(new Font("SansSerif", Font.BOLD, 10));
    
     public void init(GLAutoDrawable gld) {
         GL gl = gld.getGL();
@@ -125,6 +136,31 @@ public class HardGamePlayer extends JFrame implements MouseMotionListener, Mouse
         gl.glMatrixMode(GL.GL_PROJECTION);
         gl.glLoadIdentity();
          gl.glOrtho(-250.0, 250.0, -250.0, 250.0,1.0,-1.0);
+         
+         
+           gl.glEnable(GL.GL_TEXTURE_2D);  // Enable Texture Mapping
+        gl.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_ALPHA);	
+        gl.glGenTextures(textureNames.length, textures, 0);
+        
+        for(int i = 0; i < textureNames.length; i++){
+            try {
+                texture[i] = TextureReader.readTexture(textureNames[i] , true);
+                gl.glBindTexture(GL.GL_TEXTURE_2D, textures[i]);
+
+//                mipmapsFromPNG(gl, new GLU(), texture[i]);
+                new GLU().gluBuild2DMipmaps(
+                    GL.GL_TEXTURE_2D,
+                    GL.GL_RGBA, // Internal Texel Format,
+                    texture[i].getWidth(), texture[i].getHeight(),
+                    GL.GL_RGBA, // External format from image,
+                    GL.GL_UNSIGNED_BYTE,
+                    texture[i].getPixels() // Imagedata
+                    );
+            } catch( IOException e ) {
+              System.out.println(e);
+              e.printStackTrace();
+            }
+        }
        
     }
 
@@ -132,6 +168,10 @@ public class HardGamePlayer extends JFrame implements MouseMotionListener, Mouse
     public void display(GLAutoDrawable drawable) {
         GL gl = drawable.getGL();
         gl.glClear(GL.GL_COLOR_BUFFER_BIT);         
+        
+        DrawBackground(gl);
+        draw_ground(gl,1,1,1);
+        
          drawplayer(gl,1,0,0,0,0,1,xPosition,yPosition);//player1
           ///////////////////////////
          drawplayer(gl,0,0,1,1,0,0,xPosition2,yPosition2); //player2
@@ -152,6 +192,36 @@ public class HardGamePlayer extends JFrame implements MouseMotionListener, Mouse
     
 //        
     }      
+    
+     public void DrawBackground(GL gl){
+        gl.glEnable(GL.GL_BLEND);	
+        gl.glBindTexture(GL.GL_TEXTURE_2D, textures[3]);
+        // Turn Blending On
+
+        gl.glPushMatrix();
+            gl.glBegin(GL.GL_QUADS);
+            // Front Face
+                gl.glTexCoord2f(0.0f, 0.0f);
+                gl.glVertex3f(-1.0f, -1.0f, -1.0f);
+                gl.glTexCoord2f(1.0f, 0.0f);
+                gl.glVertex3f(1.0f, -1.0f, -1.0f);
+                gl.glTexCoord2f(1.0f, 1.0f);
+                gl.glVertex3f(1.0f, 1.0f, -1.0f);
+                gl.glTexCoord2f(0.0f, 1.0f);
+                gl.glVertex3f(-1.0f, 1.0f, -1.0f);
+            gl.glEnd();
+        gl.glPopMatrix();
+        
+        gl.glDisable(GL.GL_BLEND);
+        
+        gl.glColor3f(126, 200, 80);
+        gl.glBegin(GL.GL_QUADS);
+        gl.glVertex2f(-1.0f, -1.0f);
+        gl.glVertex2f(1.0f, -1.0f);
+        gl.glVertex2f(1.0f, 1.0f);
+        gl.glVertex2f(-1.0f, 1.0f);
+        gl.glEnd();
+    }
     
     public void reshape(
             GLDrawable drawable,
@@ -354,7 +424,7 @@ public class HardGamePlayer extends JFrame implements MouseMotionListener, Mouse
              up=false;
            }
         }   
-        gl.glColor3f(.3f,0.5f,.3f);
+        gl.glColor3f(255,255,0);
         gl.glBegin(GL.GL_POLYGON);
         for (double i = 0; i < THREE_SIXTY; i += ONE_DEGREE){
                cx = radius2 * (Math.cos(i))+x;
@@ -394,12 +464,12 @@ public class HardGamePlayer extends JFrame implements MouseMotionListener, Mouse
 //    }
 //    
     public void winner(GL gl){
-      if((x>-35&&x<35)&&y<=-235&&play){
+      if((x>-90&&x<90)&&y<=-235&&play){
         
            Again();
            scoreplayer2++;
       }
-      if((x>-35&&x<35)&&y>=235&&play){
+      if((x>-90&&x<90)&&y>=235&&play){
          
           Again();
           scoreplayer1++;
@@ -569,7 +639,61 @@ public class HardGamePlayer extends JFrame implements MouseMotionListener, Mouse
         return keyBits.get(keyCode);
     }
 
-  
+  public void draw_ground(GL gl,float red,float green,float blue){
+            gl.glLineWidth(5f);
+            //draw ground
+            gl.glColor3f(red, green, blue);
+            gl.glBegin(GL.GL_LINES);
+            gl.glVertex2f(245,-245);
+            gl.glVertex2f(245,245);
+            
+            gl.glVertex2f(-245,-245);
+            gl.glVertex2f(-245,245);
+            
+            gl.glVertex2f(245,245);
+            gl.glVertex2f(100,245);
+            
+            gl.glVertex2f(-100,245);
+            gl.glVertex2f(-245,245);
+            
+            gl.glVertex2f(-100,-245);
+            gl.glVertex2f(-245,-245);
+            
+            gl.glVertex2f(100,-245);
+            gl.glVertex2f(245,-245); 
+            
+            gl.glVertex2f(-245,0);
+            gl.glVertex2f(245,0);
+            
+             gl.glVertex2f(100,245);
+            gl.glVertex2f(100,200); 
+            
+             gl.glVertex2f(-100,245);
+            gl.glVertex2f(-100,200);
+            
+             gl.glVertex2f(-100,200);
+            gl.glVertex2f(100,200);
+            
+              gl.glVertex2f(-100,-245);
+            gl.glVertex2f(-100,-200);
+            
+             gl.glVertex2f(-100,-200);
+            gl.glVertex2f(100,-200);
+            
+            gl.glVertex2f(100,-245);
+            gl.glVertex2f(100,-200);
+            
+            gl.glEnd();
+            
+            gl.glPolygonMode(GL.GL_FRONT_AND_BACK,GL.GL_LINE);
+             gl.glBegin(GL.GL_POLYGON);
+            for (double aa = 0; aa < THREE_SIXTY; aa += ONE_DEGREE){
+                  cx = radius3 * (Math.cos(aa));
+                  cy = radius3 * (Math.sin(aa));
+                  gl.glVertex2d(cx, cy);
+            }
+            gl.glEnd();
+    }
 
 }
 }

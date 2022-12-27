@@ -64,6 +64,7 @@ StartGame game =null ;
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         if(game ==null){
             game =new StartGame();
+            game.setLocationRelativeTo(null);
             game.setVisible(true);
             this.setVisible(false);
         }

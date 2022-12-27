@@ -26,13 +26,13 @@ import  com.sun.opengl.util.j2d.TextRenderer;
 
 public class Run_gamePlay1 extends JFrame implements MouseMotionListener, MouseListener {//, KeyListener {
 
-    air_ listener = new air_();
+    air listener = new air();
     GLCanvas glcanvas;
   static Animator anim;
 
     public static void main(String[] args) {
 
-     //   Run_gamePlay1 app = new Run_gamePlay1();
+        Run_gamePlay1 app = new Run_gamePlay1();
         
     }
 
@@ -91,8 +91,7 @@ public class Run_gamePlay1 extends JFrame implements MouseMotionListener, MouseL
 
 }
 
-    class air_
-    implements GLEventListener , KeyListener{
+    class air implements GLEventListener , KeyListener{
         GLUT g=new GLUT();
     int xPosition = 0;     // x1for player1
     int yPosition =-225;  // y1 for player1
@@ -165,11 +164,9 @@ public class Run_gamePlay1 extends JFrame implements MouseMotionListener, MouseL
             boolean deviceChanged
     ) {
     }
-
     @Override
     public void reshape(GLAutoDrawable glad, int i, int i1, int i2, int i3) {
     }
-
     @Override
     public void displayChanged(GLAutoDrawable glad, boolean bln, boolean bln1) {
     }

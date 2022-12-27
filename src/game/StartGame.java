@@ -7,7 +7,7 @@ import java.net.URI;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.net.URL;
-import jdk.javadoc.internal.tool.Main;
+//import jdk.javadoc.internal.tool.Main;
 
 /**
  *
@@ -98,6 +98,7 @@ OnePlayer o =null ;
     private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
         if(o==null){
             o = new OnePlayer();
+            o.setLocationRelativeTo(null);
             o.setVisible(true);
             this.setVisible(false);
         }
@@ -122,6 +123,7 @@ Instruction i= null ;
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
  if(i==null){
      i=new Instruction();
+     i.setLocationRelativeTo(null);
      i.setVisible(true);
      this.setVisible(false);
  }
@@ -130,7 +132,9 @@ twoplayerMode startTwoPlayer=null ;
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
      if(startTwoPlayer==null){
         startTwoPlayer =new twoplayerMode ();
+        startTwoPlayer.setLocationRelativeTo(null);
         startTwoPlayer.setVisible(true);
+        this.setVisible(false);
   
      }
     }//GEN-LAST:event_jButton1ActionPerformed

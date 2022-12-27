@@ -95,12 +95,15 @@ public class OnePlayer extends javax.swing.JFrame {
     private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
 if(appmed==null){
     appmed=new MediumGamePlay();
+    appmed.setLocationRelativeTo(null);
+    this.setVisible(false);
 }      
     }//GEN-LAST:event_jButton4ActionPerformed
 StartGame start =null ;
     private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
     if(start==null){
         start = new StartGame();
+        start.setLocationRelativeTo(null);
         start.setVisible(true);
         this.setVisible(false);
     }    
@@ -109,12 +112,16 @@ GamePlay_OnePlayer appeasy  =null ;
     private void jButton6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton6ActionPerformed
       if(appeasy==null){
           appeasy = new GamePlay_OnePlayer();  
+          appeasy.setLocationRelativeTo(null);
+          this.setVisible(false);
       }   
     }//GEN-LAST:event_jButton6ActionPerformed
 HardGamePlayer game =null; 
     private void jButton7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton7ActionPerformed
         if(game==null){
             game = new HardGamePlayer();
+            game.setLocationRelativeTo(null);
+            this.setVisible(false);
         }
     }//GEN-LAST:event_jButton7ActionPerformed
 
