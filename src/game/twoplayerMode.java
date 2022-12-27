@@ -1,4 +1,4 @@
-package Textures.Example1;
+package game;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -8,7 +8,7 @@ package Textures.Example1;
 
 
 
-import Textures.TextureReader;
+//import Textures.TextureReader;
 import com.sun.opengl.util.Animator;
 import com.sun.opengl.util.FPSAnimator;
 import com.sun.opengl.util.GLUT;
@@ -122,7 +122,7 @@ class air_
     int scoreplayer1=0;
     int scoreplayer2=0;
     String textureNames[] = {"Man1.png","bullet.png", "Back.png"};
-    TextureReader.Texture texture[] = new TextureReader.Texture[textureNames.length];
+   // TextureReader.Texture texture[] = new TextureReader.Texture[textureNames.length];
     int textures[] = new int[textureNames.length];
     TextRenderer renderer;
     public void init(GLAutoDrawable gld) {

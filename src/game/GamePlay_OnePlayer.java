@@ -32,7 +32,7 @@ public class GamePlay_OnePlayer extends JFrame implements MouseMotionListener, M
 
     public static void main(String[] args) {
 
-       GamePlay_OnePlayer app = new GamePlay_OnePlayer();
+      // GamePlay_OnePlayer app = new GamePlay_OnePlayer();
         
     }
 
@@ -143,9 +143,9 @@ public class GamePlay_OnePlayer extends JFrame implements MouseMotionListener, M
          drawplayer(gl,0,0,1,1,0,0,xPosition2,yPosition2); //player2
           ////////////////////////////
        //      drawplayer(gl,0,0,1,1,0,0,xPosition,220);  // computer player
-             computer_control_easy(); 
-                          computer_control_medium(); 
-                                       computer_control_hard(); 
+            computer_control_easy(); 
+                     //    computer_control_medium(); 
+                              //       computer_control_hard(); 
 
 
           winner(gl);

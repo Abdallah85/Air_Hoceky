@@ -32,7 +32,7 @@ public class Run_gamePlay1 extends JFrame implements MouseMotionListener, MouseL
 
     public static void main(String[] args) {
 
-        Run_gamePlay1 app = new Run_gamePlay1();
+     //   Run_gamePlay1 app = new Run_gamePlay1();
         
     }
 
