@@ -150,6 +150,11 @@ public class MediumGamePlay extends JFrame implements MouseMotionListener, Mouse
 ///////////////////////////
           winner(gl);
 
+        //  // show the score on the screen
+        gl.glRasterPos2i(-200, 10);
+        g.glutBitmapString(5,Integer.toString(scoreplayer2));
+        gl.glRasterPos2i(-200, -20);
+        g.glutBitmapString(5,Integer.toString(scoreplayer1));
     
 //        
     }      
